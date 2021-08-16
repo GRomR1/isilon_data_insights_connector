@@ -1,12 +1,12 @@
-from __future__ import division
+# from __future__ import division
 from builtins import str
 from builtins import range
 from past.utils import old_div
 from builtins import object
-import gevent
-import gevent.pool
+# import gevent
+# import gevent.pool
 
-from daemons.prefab import run
+# from daemons.prefab import run
 from ast import literal_eval
 import logging
 import sys
@@ -431,7 +431,7 @@ class UpdateInterval(object):
         self.last_update = 0.0
 
 
-class IsiDataInsightsDaemon(run.RunDaemon):
+class IsiDataInsightsDaemon(object):
     """
     Periodically query a list of OneFS clusters for statistics and
     process them via a configurable stats processor module.
@@ -442,13 +442,11 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         Initialize.
         :param: pidfile is the path to the daemon's pidfile (required).
         """
-        super(IsiDataInsightsDaemon, self).__init__(pidfile=pidfile)
         self._stat_sets = {}
         self._update_intervals = []
         self._stats_processor = None
         self._stats_processor_args = None
         self._process_stats_func = None
-        self.async_worker_pool = gevent.pool.Pool(MAX_ASYNC_QUERIES)
 
     def set_stats_processor(self, stats_processor, processor_args):
         self._stats_processor = stats_processor
@@ -630,8 +628,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
             cluster,
             (stats, composite_stats, eq_stats, pct_change_stats, final_eq_stats),
         ) in cluster_stats.items():
-            self.async_worker_pool.spawn(
-                self._query_and_process_stats1,
+            self._query_and_process_stats1(
                 cluster,
                 stats,
                 composite_stats,
@@ -640,7 +637,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
                 final_eq_stats,
                 debug,
             )
-        self.async_worker_pool.join()
+        # self.async_worker_pool.join()
 
     def _query_and_process_stats1(
         self,
@@ -699,6 +696,7 @@ class IsiDataInsightsDaemon(run.RunDaemon):
         # _process_stats_with_derived_stats depending on whether or not the
         # _stats_processor has a process_stat function or just a process
         # function. The latter requires the process_stat function.
+        # LOG.debug("Cluster '%s' results: %s", cluster.name, results)
         self._process_stats_func(cluster.name, results, derived_stats_processors)
 
     def _v7_2_multistat_query(self, stats, stats_client):

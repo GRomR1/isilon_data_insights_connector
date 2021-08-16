@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # From __future_ imports have to be before everything.
-from __future__ import print_function
+# from __future__ import print_function
 from builtins import str
 
 # Have to do this before importing the other libs
@@ -9,9 +9,9 @@ from builtins import str
 # The documentation for monkey explicitly requires patching to be
 # performed as early as possible BEFORE other imports but after the
 # from __future__ imports.
-from gevent import monkey
+# from gevent import monkey
 
-monkey.patch_all()  # noqa
+# monkey.patch_all()  # noqa
 
 import sys
 
@@ -23,7 +23,7 @@ from isi_data_insights_config import (
     configure_via_cli,
     configure_via_file,
 )
-from isi_data_insights_daemon import IsiDataInsightsDaemon
+from isi_data_insights_daemon_block import IsiDataInsightsDaemon
 
 
 def main():
@@ -57,10 +57,9 @@ def main():
             configure_via_cli(daemon, args)
 
         if args.action == "start":
-            daemon.start()
+            daemon.run()
         elif args.action == "restart":
-            print("Restarting daemon with pid " + str(daemon.pid))
-            daemon.restart()
+            daemon.run()
         else:
             daemon.run(debug=True)
     elif args.action == "stop":

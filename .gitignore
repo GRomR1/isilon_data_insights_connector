@@ -62,3 +62,8 @@ target/
 
 # Development environment stuff
 .vscode
+# .vscode/
+
+# app/__pycache__/
+
+config/isi_data_insights_d.cfg

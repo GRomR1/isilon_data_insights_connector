@@ -2,11 +2,12 @@
 This file contains utility functions for configuring the IsiDataInsightsDaemon
 via command line args and config file.
 """
-from __future__ import print_function
-from __future__ import division
-from future import standard_library
+# from __future__ import print_function
+# from __future__ import division
+# from future import standard_library
 
-standard_library.install_aliases()  # noqa: E402
+# standard_library.install_aliases()  # noqa: E402
+from time import gmtime
 from builtins import input
 from builtins import str
 from builtins import range
@@ -23,7 +24,7 @@ import urllib3
 from ast import literal_eval
 from Equation import Expression
 
-from isi_data_insights_daemon import (
+from isi_data_insights_daemon_block import (
     StatsConfig,
     ClusterConfig,
     ClusterCompositeStatComputer,
@@ -38,7 +39,7 @@ import isi_sdk_utils
 LOG = logging.getLogger(__name__)
 
 DEFAULT_PID_FILE = "./isi_data_insights_d.pid"
-DEFAULT_LOG_FILE = "./isi_data_insights_d.log"
+# DEFAULT_LOG_FILE = "./isi_data_insights_d.log"
 DEFAULT_LOG_LEVEL = "INFO"
 # name of the section in the config file where the main/global settings for the
 # daemon are stored.
@@ -748,31 +749,19 @@ def configure_logging_via_cli(args):
     """
     Setup the logging from command line args.
     """
-    if args.action != "debug":
-        if args.log_file is None:
-            args.log_file = DEFAULT_LOG_FILE
+    if args.log_level is None:
+        args.log_level = DEFAULT_LOG_LEVEL
 
-        parent_dir = os.path.dirname(args.log_file)
-        if parent_dir and os.path.exists(parent_dir) is False:
-            print("Invalid log file path: %s." % (args.log_file), file=sys.stderr)
-            sys.exit(1)
-
-        if args.log_level is None:
-            args.log_level = DEFAULT_LOG_LEVEL
-
-        log_level = _log_level_str_to_enum(args.log_level)
-        logging.basicConfig(
-            filename=args.log_file,
-            level=log_level,
-            format="%(asctime)s:%(name)s:%(levelname)s: %(message)s",
-        )
-    else:  # configure logging to stdout for 'debug' action
-        logging.basicConfig(
-            stream=sys.stdout,
-            level=logging.DEBUG,
-            format="%(asctime)s:%(name)s:%(levelname)s: %(message)s",
-        )
-
+    log_level = _log_level_str_to_enum(args.log_level)
+    logging.Formatter.converter = gmtime
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=log_level,
+        # format="%(asctime)s:%(name)s:%(levelname)s: %(message)s",
+        format='%(asctime)s.%(msecs)03dZ - %(name)s - %(levelname)s - %(message)s',
+        datefmt="%Y-%m-%dT%H:%M:%S"
+    )
+    
 
 def configure_args_via_file(args):
     """

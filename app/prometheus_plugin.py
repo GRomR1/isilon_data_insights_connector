@@ -1,4 +1,4 @@
-from __future__ import print_function
+# from __future__ import print_function
 from future.utils import string_types
 import logging
 import time
@@ -94,14 +94,17 @@ def _process_dict(tags, basekey, statdict):
     all number values in the dict are metrics. But it contains text members
     and fields named with 'id': Those are filtered out as tags
     '''
+    newstatdict = {}
     for k in statdict.keys():
         if isinstance(statdict[k], string_types) or (k[-2:] == 'id' and isinstance(statdict[k], int)):
             tags[k] = statdict[k]
-            del statdict[k]
+            # del statdict[k]
+        else:
+            newstatdict[k] = statdict[k]
 
-    for k in statdict.keys():
+    for k in newstatdict.keys():
         mname = basekey + '_' + k
-        _process_one_stat(tags, mname, statdict[k])
+        _process_one_stat(tags, mname, newstatdict[k])
 
 def _process_one_stat(tags, metricname, value):
     ''' process one stat for prometheus.

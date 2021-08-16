@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  app:
+    build: ./app
+    environment: 
+      CONFIG_FILE_PATH: /app/config/isi_data_insights_d.cfg
+    volumes:
+    #  - ./app:/app
+     - ./config:/app/config:ro
+    container_name: isi_data_insights
+    restart: unless-stopped
+    command: debug # use 'debug' or 'start'
+    ports: 
+    - 8080:8080
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    networks:
+      - isi
+
+networks:
+  isi:
+    name: isi
